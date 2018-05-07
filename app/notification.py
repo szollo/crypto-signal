@@ -284,7 +284,14 @@ class Notifier():
                                 except:
                                     last_status = str()
 
+                                ####### DON'T ALERT IF YOU'VE ALERTED ALREADY
+                                previous_result_exists = 'previous_result' in locals() or 'previous_result' in globals()
+                                if previous_result_exists:
+                                    if previous_result['is_hot'] or previous_result['is_cold']:
+                                        should_alert = False
+
                                 should_alert = True
+
                                 if analysis['config']['alert_frequency'] == 'once':
                                     if last_status == status:
                                         should_alert = False
@@ -304,6 +311,8 @@ class Notifier():
                                         status=status,
                                         last_status=last_status
                                     )
+
+                            previous_result = latest_result
 
         # Merge changes from new analysis into last analysis
         self.last_analysis = {**self.last_analysis, **new_analysis}
